@@ -61,14 +61,14 @@ resource aws_security_group mysecuritygrp {
 resource aws_instance "my_instance" {
     key_name = aws_key_pair.my-aws-key.key_name
     security_groups = [aws_security_group.mysecuritygrp.name]
-    instance_type = "t2.micro"
-    ami = "ami-0d0ad8bb301edb745"
+    instance_type = var.ec2_instance-type
+    ami = var.ec2_ami
     root_block_device {
-      volume_size = 15
+      volume_size = var.ec2_root_storage_size
       volume_type = "gb3"
     }
     tags = {
-        Name = "instance_for_DAS"
+        Name = var.ec2_instance_name
     }
 
 }
