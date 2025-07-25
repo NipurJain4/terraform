@@ -1,0 +1,75 @@
+# key pair
+resource "aws_key_pair" "my-aws-key" {
+  key_name   = "terra-key"
+  public_key = file("terra-key-ec2.pub")
+}
+
+# VPC & Security
+resource "aws_default_vpc" "default" {
+  tags = {
+    Name = "Default VPC"
+  }
+}
+
+resource aws_security_group mysecuritygrp {
+    name = "automate_sg"
+    description = "Allow TLS inbound traffic and all outbound traffic"
+    vpc_id = aws_default_vpc.default
+    
+    # inbound ---ingress
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "SSH-port-open"
+    }
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "HTTP port open"
+    }
+        ingress {
+        from_port = 3000
+        to_port = 3000
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "3000 port open"
+    }
+        ingress {
+        from_port = 5000
+        to_port = 5000
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "5000 port open"
+    }
+    egress{
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+        description = "all access "
+    }
+    tags = {
+        Name = "allow_tls"
+        }   
+}
+
+# ec2 instance
+resource aws_instance "my_instance" {
+    key_name = aws_key_pair.my-aws-key.key_name
+    security_groups = [aws_security_group.mysecuritygrp.name]
+    instance_type = "t2.micro"
+    ami = "ami-0d0ad8bb301edb745"
+    root_block_device {
+      volume_size = 15
+      volume_type = "gb3"
+    }
+    tags = {
+        Name = "instance_for_DAS"
+    }
+
+}
+  
