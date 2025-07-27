@@ -14,7 +14,7 @@ resource "aws_default_vpc" "default" {
 resource aws_security_group mysecuritygrp {
     name = "automate_sg"
     description = "Allow TLS inbound traffic and all outbound traffic"
-    vpc_id = aws_default_vpc.default
+    vpc_id = aws_default_vpc.default.Name
     
     # inbound ---ingress
     ingress {
@@ -66,7 +66,7 @@ resource aws_instance "my_instance" {
     user_data = file("userdata.sh")
     root_block_device {
       volume_size = var.ec2_root_storage_size
-      volume_type = "gb3"
+      volume_type = "gp3"
     }
     tags = {
         Name = var.ec2_instance_name
